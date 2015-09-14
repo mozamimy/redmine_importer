@@ -447,8 +447,9 @@ class ImporterController < ApplicationController
     # This is a cache of previously inserted issues indexed by the value
     # the user provided in the unique column
     @issue_by_unique_attr = Hash.new
-    # Cache of user id by login
-    @user_by_login = Hash.new
+    # Cache of users by identifier (identifier means 'login' or 'firstname lastname')
+    # @user_by_logins = Hash.new
+    @users_cache = Hash.new
     # Cache of Version by name
     @version_id_by_name = Hash.new
   end
@@ -653,26 +654,47 @@ class ImporterController < ApplicationController
 
   # Returns the id for the given user or raises RecordNotFound
   # Implements a cache of users based on login name
-  def user_for_login!(login)
-    begin
-      if !@user_by_login.has_key?(login)
-        @user_by_login[login] = User.find_by_login!(login)
-      end
-    rescue ActiveRecord::RecordNotFound
-      if params[:use_anonymous]
-        @user_by_login[login] = User.anonymous()
-      else
-        @unfound_class = "User"
-        @unfound_key = login
-        raise
-      end
+  # def user_for_login!(login)
+  #   begin
+  #     if !@user_by_login.has_key?(login)
+  #       @user_by_login[login] = User.find_by_login!(login)
+  #     end
+  #   rescue ActiveRecord::RecordNotFound
+  #     if params[:use_anonymous]
+  #       @user_by_login[login] = User.anonymous()
+  #     else
+  #       @unfound_class = "User"
+  #       @unfound_key = login
+  #       raise
+  #     end
+  #   end
+  #   @user_by_login[login]
+  # end
+  #
+  def user_for(identifier)
+    unless @users_cache[identifier]
+      try_to_find_user_by_login(identifier) ||
+      try_to_find_user_by_name(identifier) ||
+      set_anonymous_user_to(identifier)
     end
-    @user_by_login[login]
+
+    @users_cache[identifier]
   end
 
-  def user_id_for_login!(login)
-    user = user_for_login!(login)
-    user ? user.id : nil
+  def try_to_find_user_by_login
+    @users_cache[identifier] = User.find_by_login(login)
+  end
+
+  def try_to_find_user_by_name
+
+  end
+
+  # def user_id_for_login!(login)
+  #   user = user_for_login!(login)
+  #   user ? user.id : nil
+  # end
+  def user_id_for(identifier)
+
   end
 
 
