@@ -648,7 +648,7 @@ class ImporterController < ApplicationController
     end
 
     if unique_attr == "id"
-      issues = [Issue.find_by_id(attr_value)]
+      issues = [Issue.find_by_id(attr_value)].compact
     else
       # Use IssueQuery class Redmine >= 2.3.0
       begin
