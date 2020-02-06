@@ -8,9 +8,9 @@ workflows:
   test:
     jobs:
       - redmine/download:
-          name: 'redmine40-download'
-          redmine_version: '4.0.4'
+          name: 'redmine41-download'
+          redmine_version: '4.1.0'
       - redmine/test:
-          name: 'redmine40-test'
+          name: 'redmine41-test'
           executor: redmine/ruby-pg
-          requires: [redmine40-download]
+          requires: [redmine41-download]
